@@ -31,20 +31,19 @@ public class Update
         _logger = loggerFactory.CreateLogger<Update>();
     }
 
-#if DEBUG
-    [Function(nameof(Update))]
-    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequestData req)
+
+    [Function("ManualUpdate")]
+    public async Task<HttpResponseData> RunHttpAsync([HttpTrigger(AuthorizationLevel.Function)] HttpRequestData req)
     {
         await PerformUpdate(req.Url.Query.Contains("forceupdate"));
         return req.CreateResponse(HttpStatusCode.OK);
     }
-#else
+
     [Function(nameof(Update))]
-    public async Task RunAsync([TimerTrigger("49 49 * * * *" /* run every hour at xx:49:49 */)] TimerInfo myTimer)
+    public async Task RunTimerAsync([TimerTrigger("49 49 * * * *" /* run every hour at xx:49:49 */)] TimerInfo myTimer)
     {
         await PerformUpdate();
     }
-#endif
 
     private async Task PerformUpdate(bool forceUpdate = false)
     {
@@ -87,7 +86,7 @@ public class Update
         else
         {
             _logger.LogInformation("Syncing changes after " + syncState.LastUpdatedUnits.ToString("O"));
-
+            // TODO! Implement fetching / sync of updates only
         }
 
         _logger.LogInformation("Sync completed, updating sync state ...");
