@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dan.EntityRegistryProxy.Models;
+namespace Dan.EntityRegistryUpdater.Models;
 
 public enum UnitType
 {
