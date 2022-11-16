@@ -7,6 +7,5 @@ using System.Threading.Tasks;
 namespace Dan.EntityRegistryUpdater.Models;
 public class SyncState
 {
-    public DateTimeOffset LastUpdatedUnits { get; set; }
-    public DateTimeOffset LastUpdatedSubUnits { get; set; }
+    public DateTimeOffset LastUpdated { get; set; }
 }

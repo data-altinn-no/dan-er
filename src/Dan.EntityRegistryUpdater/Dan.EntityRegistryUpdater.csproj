@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Dan.EntityRegistryUpdater</RootNamespace>
+    <UserSecretsId>6f5fd5fe-f204-4fcd-8774-2b5cc412ab75</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.14.1" />
@@ -13,8 +14,7 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.13" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.8.0-preview2" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="SharpZipLib" Version="1.4.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

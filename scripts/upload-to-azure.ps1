@@ -4,11 +4,10 @@
 Param(
     [Parameter(Mandatory=$true)][string] $OutputFolder,
     [Parameter(Mandatory=$true)][string] $ContainerSasUrl,
-    [Parameter()][string] $SyncStateFile
+    [Parameter()][string] $SyncStateFile,
     [switch]$SkipDownload,
     [switch]$SkipUpload,
-    [switch]$SkipUpdateSyncState,
-    
+    [switch]$SkipUpdateSyncState
 )
 
 if (!(Get-Command azcopy -ErrorAction SilentlyContinue)) {
@@ -29,8 +28,9 @@ if (!(Test-Path -Path $registrySeeder)) {
 }
 
 # Get date of yesterday, since the dump we're downloading may be up to 24h old. 
+# Note the format, the ER API requires this exact form in UTC
 $syncDate = (Get-Date).AddDays(-1)
-$syncDateString = $syncdate.ToString("O")
+$syncDateString = $syncdate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
 if (!($SkipDownload)) {
     Write-Information "--- DOWNLOAD ---"
@@ -46,25 +46,31 @@ if (!($SkipUpload)) {
 if (!($SkipUpdateSyncState)) {
     Write-Information "--- UPDATE SYNC STATE ---"
 
+    $syncStateFileEnheter = Join-Path -Path $OutputFolder -ChildPath "state-enheter.json" 
+    $syncStateFileUnderEnheter = Join-Path -Path $OutputFolder -ChildPath "state-underenheter.json"
+    $syncStateFileAll = Join-Path -Path $OutputFolder -ChildPath "state-*.json"
+
     if ($SyncStateFile) {
         if (Test-Path -Path $SyncStateFile) {
-            $syncStateFileToUpload = $SyncStateFile
+            Copy-Item $SyncStateFile $syncStateFileEnheter
+            Copy-Item $SyncStateFile $syncStateFileUnderEnheter
         }
         else {
-            Write-Warning "Unable to find \"$syncStateFileToUpload\", exiting"
+            Write-Warning "Unable to find \"$SyncStateFile\", exiting"
             Exit 1
         }
     } 
     else {
-        $syncStateFileToUpload = (Join-Path -Path $OutputFolder -ChildPath "state.json")
+        $syncState =
 @"
 {
-    "LastUpdatedUnits": "$syncDateString",
-    "LastUpdatedSubUnits": "$syncDateString"
+    "LastUpdated": "$syncDateString"
 }
-"@ | Out-File -FilePath $syncStateFileToUpload
+"@
+    $syncState | Out-File -FilePath $syncStateFileEnheter -Encoding ascii
+    $syncState | Out-File -FilePath $syncStateFileUnderEnheter -Encoding ascii
         
     }
        
-    azcopy copy $syncStateFileToUpload $ContainerSasUrl --content-type='application/json'
+    azcopy copy $syncStateFileAll $ContainerSasUrl --content-type='application/json'
 }

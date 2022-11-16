@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Dan.EntityRegistryUpdater.Models;
 
-public enum UnitType
+public class UnitType
 {
-    Units,
-    SubUnits
+    public string Name { get; set; }
+    public string Url { get; set; } 
+    public string StateBlob { get; set; }
+    public bool IsSubUnit { get; set; }
 }
